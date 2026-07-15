@@ -1,21 +1,10 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import ResponsesManager, { Comment } from '@/components/ResponsesManager'
 
 export const metadata = {
   title: 'Responses Dashboard | DigitalBook',
-}
-
-interface Comment {
-  id: number
-  user_id: string
-  chapter_id: number
-  content: string
-  voice_url: string | null
-  created_at: string
-  user_email?: string
-  ip_address?: string
-  location?: string
 }
 
 export default async function ReadResponsesPage({
@@ -146,68 +135,7 @@ export default async function ReadResponsesPage({
                 </h2>
               </div>
 
-              {activeComments.length === 0 ? (
-                <div className="text-center py-20 bg-white dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                  <p className="text-zinc-500">No comments for this chapter.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                  {activeComments.map((comment) => (
-                    <div 
-                      key={comment.id}
-                      className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <div className="mb-4 pb-4 border-b border-zinc-100 dark:border-zinc-800/60">
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100 break-all">
-                            {comment.user_email || 'Anonymous User'}
-                          </div>
-                          <div className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0 ml-4">
-                            {new Date(comment.created_at).toLocaleDateString()}
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {comment.location && (
-                            <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-medium">
-                              📍 {comment.location}
-                            </span>
-                          )}
-                          {comment.ip_address && (
-                            <span className="inline-flex items-center px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-500 text-xs font-mono">
-                              {comment.ip_address}
-                            </span>
-                          )}
-                          <span className="inline-flex items-center px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-400 text-[10px] font-mono truncate max-w-[120px]" title={comment.user_id}>
-                            ID: {comment.user_id.split('-')[0]}...
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="prose prose-zinc dark:prose-invert max-w-none text-sm md:text-base text-zinc-700 dark:text-zinc-300">
-                        <p className="whitespace-pre-wrap m-0">
-                          {comment.content}
-                        </p>
-                      </div>
-
-                      {comment.voice_url && (
-                        <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50 dark:bg-zinc-950/50 -mx-6 -mb-6 px-6 pb-6 rounded-b-xl">
-                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 mt-2">
-                            Voice Note Attached
-                          </h4>
-                          <audio 
-                            controls 
-                            src={comment.voice_url}
-                            className="w-full h-8 outline-none"
-                          >
-                            Your browser does not support the audio element.
-                          </audio>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ResponsesManager comments={activeComments} />
             </main>
           </div>
         )}
