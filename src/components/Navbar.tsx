@@ -20,9 +20,7 @@ export default async function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/read/prelude" className="hidden sm:block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                  Continue Reading
-                </Link>
+                <ContinueReadingLink userId={user.id} />
                 <form action={logout}>
                   <button className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                     Log out
@@ -40,3 +38,41 @@ export default async function Navbar() {
     </nav>
   )
 }
+
+async function ContinueReadingLink({ userId }: { userId: string }) {
+  const supabase = await createClient()
+  let latestChapter = 0
+
+  const { data: history } = await supabase
+    .from('reading_history')
+    .select('latest_chapter_unlocked')
+    .eq('user_id', userId)
+    .single()
+  
+  if (history) {
+    latestChapter = history.latest_chapter_unlocked
+  }
+
+  const chapterPaths: Record<number, string> = {
+    0: 'prelude',
+    1: 'chapter-1',
+    2: 'chapter-2',
+    3: 'chapter-3',
+    4: 'chapter-4',
+    5: 'chapter-5',
+    6: 'chapter-6',
+    7: 'chapter-7',
+    8: 'chapter-8',
+    9: 'chapter-9',
+    10: 'chapter-10',
+  }
+
+  const linkHref = `/read/${chapterPaths[latestChapter] || 'prelude'}`
+
+  return (
+    <Link href={linkHref} className="hidden sm:block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+      Continue Reading
+    </Link>
+  )
+}
+

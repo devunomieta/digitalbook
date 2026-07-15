@@ -16,10 +16,22 @@ export default async function ReadLayout({
   }
 
   // Update last_read_at to track when the user opened the website to read
-  await supabase
+  const { data: existingHistory } = await supabase
     .from('reading_history')
-    .update({ last_read_at: new Date().toISOString() })
+    .select('user_id')
     .eq('user_id', user.id)
+    .single()
+
+  if (existingHistory) {
+    await supabase
+      .from('reading_history')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('user_id', user.id)
+  } else {
+    await supabase
+      .from('reading_history')
+      .insert({ user_id: user.id, last_read_at: new Date().toISOString(), latest_chapter_unlocked: 0 })
+  }
 
   return (
     <>
