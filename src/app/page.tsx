@@ -8,8 +8,11 @@ export default function Home() {
         
         {/* Hero Section */}
         <div className="space-y-6">
-          <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
-            A Journey Awaits.
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100 leading-[1.1] sm:leading-[1.1]">
+            The Architecture of <br className="hidden sm:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300">
+              Uncompiled Hearts
+            </span>
           </h1>
           <p className="text-xl sm:text-2xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
             Experience a new way of reading. Immerse yourself in the story, share your thoughts, and unlock the next chapter.

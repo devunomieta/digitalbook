@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import RulesPopup from '@/components/RulesPopup'
 
 export default async function ReadLayout({
   children,
@@ -10,12 +11,21 @@ export default async function ReadLayout({
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/signup')
   }
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto px-6 py-12 md:py-20 lg:py-24">
-      {children}
-    </div>
+    <>
+      <RulesPopup />
+      <div className="flex-1 w-full relative bg-[#fdfbf7] dark:bg-[#121212] selection:bg-blue-200 dark:selection:bg-blue-900/50">
+        {/* Subtle paper texture overlay */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none mix-blend-multiply dark:mix-blend-overlay" 
+             style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}></div>
+        
+        <div className="max-w-3xl mx-auto px-6 py-16 md:py-24 relative z-10">
+          {children}
+        </div>
+      </div>
+    </>
   )
 }
