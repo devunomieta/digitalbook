@@ -19,13 +19,29 @@ export async function submitComment(formData: FormData) {
     return { error: 'Comment must be at least 20 characters long to ensure meaningful feedback.' }
   }
 
+  const voiceFile = formData.get('voice_audio') as File | null
+  let voiceUrl = null
+
+  if (voiceFile && voiceFile.size > 0) {
+    const fileName = `${user.id}/${Date.now()}-voice.webm`
+    const { data, error: uploadError } = await supabase.storage
+      .from('voice_comments')
+      .upload(fileName, voiceFile, { contentType: voiceFile.type || 'audio/webm' })
+      
+    if (!uploadError && data) {
+      const { data: { publicUrl } } = supabase.storage.from('voice_comments').getPublicUrl(data.path)
+      voiceUrl = publicUrl
+    }
+  }
+
   // Insert comment
   const { error: commentError } = await supabase
     .from('comments')
     .insert({
       user_id: user.id,
       chapter_id: chapterId,
-      content: content.trim()
+      content: content.trim(),
+      voice_url: voiceUrl
     })
 
   if (commentError) {

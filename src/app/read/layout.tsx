@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import RulesPopup from '@/components/RulesPopup'
+import ReadContainer from '@/components/ReadContainer'
 
 export default async function ReadLayout({
   children,
@@ -22,8 +22,10 @@ export default async function ReadLayout({
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02] pointer-events-none mix-blend-multiply dark:mix-blend-overlay" 
              style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}></div>
         
-        <div className="max-w-3xl mx-auto px-6 py-16 md:py-24 relative z-10">
-          {children}
+        <div className="max-w-4xl mx-auto px-6 py-16 md:py-24 relative z-10">
+          <ReadContainer>
+            {children}
+          </ReadContainer>
         </div>
       </div>
     </>

@@ -20,7 +20,7 @@ export default function PreludePage() {
         <div className="h-1 w-24 bg-blue-600 rounded-full mx-auto" />
       </header>
 
-      <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl mx-auto space-y-8 leading-[2.2] text-[#2c2c2c] dark:text-[#d4d4d4] font-serif">
+      <div id="chapter-content">
         <p className="first-letter:text-7xl first-letter:font-black first-letter:text-blue-600 dark:first-letter:text-blue-500 first-letter:mr-3 first-letter:float-left first-letter:leading-[0.8] first-line:uppercase first-line:tracking-widest">
           There is a distinct, mocking rhythm to the hum of a ceiling fan in a Yaba apartment. It slices through the heavy, humid air of a Lagos midnight, a monotonous swish-swish-swish that sounds suspiciously like the ticking of a clock that has lost its mind.
         </p>
