@@ -41,9 +41,10 @@ export async function signup(formData: FormData) {
     }
 
     return { success: true }
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : JSON.stringify(err)
     console.error('Signup exception:', err)
-    return { error: `Exception: ${err?.message || JSON.stringify(err)}` }
+    return { error: `Exception: ${errorMsg}` }
   }
 }
 

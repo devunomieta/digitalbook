@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Mic, Square, Play, Trash2 } from 'lucide-react'
+import { Mic, Square, Trash2 } from 'lucide-react'
 
 interface VoiceRecorderProps {
   onAudioReady: (blob: Blob | null) => void

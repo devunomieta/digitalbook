@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Play, Pause, Square, Type, Minus, Plus, Settings2 } from 'lucide-react'
+import { Play, Pause, Square, Type, Minus, Plus } from 'lucide-react'
 
 export type FontStyle = 'font-serif' | 'font-mono'
 export type TextSize = 14 | 16 | 18 | 20 | 22 | 24

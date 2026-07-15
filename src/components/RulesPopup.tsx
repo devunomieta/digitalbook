@@ -9,6 +9,7 @@ export default function RulesPopup() {
   useEffect(() => {
     const hasAccepted = localStorage.getItem('digitalbook_rules_accepted')
     if (!hasAccepted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(true)
       // Lock scrolling on body when modal is open
       document.body.style.overflow = 'hidden'
