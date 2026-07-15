@@ -120,14 +120,14 @@ export default async function ReadResponsesPage({
                     <Link
                       key={chapterId}
                       href={`/readresponses?chapter=${chapterId}`}
-                      className={`px-4 py-3 rounded-lg text-sm transition-all duration-200 flex justify-between items-center ${
+                      className={`px-4 py-3 rounded-lg text-sm transition-all duration-200 flex justify-between items-center min-w-0 ${
                         isActive 
                           ? 'bg-blue-600 text-white font-medium shadow-md shadow-blue-600/20' 
                           : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800/50'
                       }`}
                     >
-                      <span className="truncate pr-4">{chapterTitles[chapterId] || `Chapter ${chapterId}`}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      <span className="truncate pr-4 flex-1 min-w-0">{chapterTitles[chapterId] || `Chapter ${chapterId}`}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
                         isActive ? 'bg-blue-500/50 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
                       }`}>
                         {count}

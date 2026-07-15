@@ -56,7 +56,7 @@ export default function CommentForm({ chapterId, nextChapterUrl }: CommentFormPr
   }
 
   return (
-    <div className="mt-20 bg-white dark:bg-zinc-900 p-8 md:p-10 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden">
+    <div className="mt-20 bg-white dark:bg-zinc-900 p-5 sm:p-8 md:p-10 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl relative overflow-hidden w-full max-w-full">
       {/* Decorative gradient blob */}
       <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
       

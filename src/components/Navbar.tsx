@@ -20,7 +20,7 @@ export default async function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/read/prelude" className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                <Link href="/read/prelude" className="hidden sm:block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                   Continue Reading
                 </Link>
                 <form action={logout}>

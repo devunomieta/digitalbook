@@ -72,14 +72,14 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
       
       {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
       
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 w-full max-w-full">
         {!audioUrl ? (
           <>
             {isRecording ? (
               <button
                 type="button"
                 onClick={stopRecording}
-                className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors shrink-0"
               >
                 <Square className="w-4 h-4 fill-current" /> Stop
               </button>
@@ -87,16 +87,16 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
               <button
                 type="button"
                 onClick={startRecording}
-                className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors shrink-0"
               >
                 <Mic className="w-4 h-4" /> Record Voice
               </button>
             )}
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">Speak your mind directly.</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 min-w-[120px]">Speak your mind directly.</p>
           </>
         ) : (
-          <div className="flex items-center gap-3 w-full">
-            <audio src={audioUrl} controls className="h-10 flex-1 max-w-full" />
+          <div className="flex flex-wrap items-center gap-3 w-full max-w-full overflow-hidden">
+            <audio src={audioUrl} controls className="h-10 flex-1 min-w-[200px] max-w-full" />
             <button
               type="button"
               onClick={resetRecording}
