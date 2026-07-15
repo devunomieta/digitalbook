@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 
 export async function submitComment(formData: FormData) {
@@ -34,6 +35,13 @@ export async function submitComment(formData: FormData) {
     }
   }
 
+  // Get headers
+  const headersList = await headers()
+  const ip_address = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'Unknown IP'
+  const country = headersList.get('x-vercel-ip-country')
+  const city = headersList.get('x-vercel-ip-city')
+  const location = [city, country].filter(Boolean).join(', ') || 'Unknown Location'
+
   // Insert comment
   const { error: commentError } = await supabase
     .from('comments')
@@ -41,7 +49,10 @@ export async function submitComment(formData: FormData) {
       user_id: user.id,
       chapter_id: chapterId,
       content: content.trim(),
-      voice_url: voiceUrl
+      voice_url: voiceUrl,
+      user_email: user.email,
+      ip_address,
+      location
     })
 
   if (commentError) {
