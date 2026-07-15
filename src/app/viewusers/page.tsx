@@ -1,6 +1,7 @@
-import { createClient } from '@/utils/supabase/server'
-import { createAdminClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Users Dashboard | DigitalBook',
@@ -50,15 +51,31 @@ export default async function ViewUsersPage() {
   }
 
   // Fetch all users using admin client
-  const adminClient = await createAdminClient()
-  const { data: usersData, error: usersError } = await adminClient.auth.admin.listUsers()
+  let adminClient;
+  let usersData;
+  let usersError;
+
+  try {
+    adminClient = await createAdminClient()
+    const result = await adminClient.auth.admin.listUsers()
+    usersData = result.data
+    usersError = result.error
+  } catch (err: any) {
+    return (
+      <div className="min-h-screen p-8 text-center bg-zinc-50 dark:bg-zinc-950">
+        <h1 className="text-2xl font-bold text-red-500 mb-4">Configuration Error</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">Failed to initialize admin client: {err?.message || 'Unknown error'}</p>
+        <p className="text-sm mt-4 text-zinc-500">Ensure SUPABASE_SERVICE_ROLE_KEY is set correctly in production.</p>
+      </div>
+    )
+  }
 
   if (usersError) {
     return (
       <div className="min-h-screen p-8 text-center bg-zinc-50 dark:bg-zinc-950">
         <h1 className="text-2xl font-bold text-red-500 mb-4">Error loading users</h1>
         <p className="text-zinc-600 dark:text-zinc-400">{usersError.message}</p>
-        <p className="text-sm mt-4 text-zinc-500">Ensure SUPABASE_SERVICE_ROLE_KEY is set correctly.</p>
+        <p className="text-sm mt-4 text-zinc-500">Ensure SUPABASE_SERVICE_ROLE_KEY is valid.</p>
       </div>
     )
   }
