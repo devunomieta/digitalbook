@@ -15,6 +15,12 @@ export default async function ReadLayout({
     redirect('/signup')
   }
 
+  // Update last_read_at to track when the user opened the website to read
+  await supabase
+    .from('reading_history')
+    .update({ last_read_at: new Date().toISOString() })
+    .eq('user_id', user.id)
+
   return (
     <>
       <RulesPopup />
