@@ -64,6 +64,13 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
       const errorMsg = err.message || 'Unknown error'
       if (errorMsg.includes('HTTPS')) {
         setError('Microphone access requires a secure HTTPS connection on this device.')
+      } else if (err.name === 'NotAllowedError' || errorMsg.toLowerCase().includes('not allowed')) {
+        setError(
+          'Your browser or device is blocking microphone access. To fix this:\n' +
+          '• iOS: Go to Settings > Chrome (or Safari) and enable "Microphone"\n' +
+          '• Android: Go to Settings > Apps > Chrome > Permissions and allow "Microphone"\n' +
+          '• Desktop: Click the lock icon in the URL bar and allow Microphone access'
+        )
       } else {
         setError(`Microphone access denied or unavailable (${errorMsg}).`)
       }
@@ -110,7 +117,7 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
         We love hearing the raw emotion in your voice. Take a moment to record your thoughts—it makes the experience much more immersive!
       </p>
       
-      {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
+      {error && <p className="text-xs text-red-500 mb-2 whitespace-pre-line">{error}</p>}
       
       <div className="flex flex-wrap items-center gap-3 w-full max-w-full">
         {!audioUrl ? (

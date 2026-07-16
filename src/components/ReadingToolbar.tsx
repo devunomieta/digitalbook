@@ -23,6 +23,7 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
   const synthRef = useRef<SpeechSynthesis | null>(null)
   const paragraphsRef = useRef<HTMLParagraphElement[]>([])
   const currentPRef = useRef<number>(0)
+  const isRestartingRef = useRef(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -42,7 +43,7 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
     })
   }
 
-  const speakNextParagraph = () => {
+  const speakNextParagraph = (speed = ttsSpeed, pitch = ttsPitch) => {
     if (!synthRef.current) return
     if (currentPRef.current >= paragraphsRef.current.length) {
       setIsPlaying(false)
@@ -56,7 +57,7 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
     
     if (!text.trim()) {
       currentPRef.current++
-      speakNextParagraph()
+      speakNextParagraph(speed, pitch)
       return
     }
 
@@ -67,8 +68,8 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
       utterance.voice = preferredVoice
     }
 
-    utterance.rate = ttsSpeed
-    utterance.pitch = ttsPitch
+    utterance.rate = speed
+    utterance.pitch = pitch
 
     utterance.onstart = () => {
       clearHighlights()
@@ -77,10 +78,11 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
     }
 
     utterance.onend = () => {
+      if (isRestartingRef.current) return
       currentPRef.current++
       // If we are still playing (not stopped or paused), continue to next
       if (!isPaused) {
-         speakNextParagraph()
+         speakNextParagraph(speed, pitch)
       }
     }
 
@@ -88,9 +90,11 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
       if (e.error !== 'interrupted' && e.error !== 'canceled') {
         console.warn("TTS Error:", e.error)
       }
-      setIsPlaying(false)
-      setIsPaused(false)
-      clearHighlights()
+      if (!isRestartingRef.current) {
+        setIsPlaying(false)
+        setIsPaused(false)
+        clearHighlights()
+      }
     }
 
     synthRef.current.speak(utterance)
@@ -158,6 +162,32 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
     if (idx < sizes.length - 1) onSizeChange(sizes[idx + 1])
   }
 
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value)
+    setTtsSpeed(val)
+    if (isPlaying && synthRef.current) {
+      isRestartingRef.current = true
+      synthRef.current.cancel()
+      setTimeout(() => {
+        isRestartingRef.current = false
+        speakNextParagraph(val, ttsPitch)
+      }, 50)
+    }
+  }
+
+  const handlePitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value)
+    setTtsPitch(val)
+    if (isPlaying && synthRef.current) {
+      isRestartingRef.current = true
+      synthRef.current.cancel()
+      setTimeout(() => {
+        isRestartingRef.current = false
+        speakNextParagraph(ttsSpeed, val)
+      }, 50)
+    }
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-end">
       
@@ -217,7 +247,7 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
                     type="range" 
                     min="0.5" max="2" step="0.1" 
                     value={ttsSpeed} 
-                    onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
+                    onChange={handleSpeedChange}
                     className="w-full accent-blue-600"
                   />
                 </div>
@@ -231,7 +261,7 @@ export default function ReadingToolbar({ onFontChange, onSizeChange, currentFont
                     type="range" 
                     min="0" max="2" step="0.1" 
                     value={ttsPitch} 
-                    onChange={(e) => setTtsPitch(parseFloat(e.target.value))}
+                    onChange={handlePitchChange}
                     className="w-full accent-blue-600"
                   />
                 </div>

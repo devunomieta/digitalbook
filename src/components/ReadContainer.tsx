@@ -9,7 +9,7 @@ interface ReadContainerProps {
 
 export default function ReadContainer({ children }: ReadContainerProps) {
   const [font, setFont] = useState<FontStyle>('font-serif')
-  const [size, setSize] = useState<TextSize>(20) // default 20px for better reading
+  const [size, setSize] = useState<TextSize>(16) // default 16px for better reading
 
   return (
     <>
