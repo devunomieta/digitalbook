@@ -65,26 +65,33 @@ export default function CommentForm({ chapterId, nextChapterUrl }: CommentFormPr
         <p className="text-zinc-600 dark:text-zinc-400 mb-8 text-sm sm:text-base leading-relaxed max-w-xl">
           You must leave a meaningful comment to unlock the next chapter. Your reflections help shape the journey.
         </p>
+        
+        <div className="mb-8">
+          <VoiceRecorder onAudioReady={setVoiceBlob} />
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           
           {/* General comments */}
           <div className="space-y-2">
-            <label className="block font-semibold text-zinc-800 dark:text-zinc-200">
-              Leave a comment
-            </label>
+            <div className="flex flex-col gap-1">
+              <label className="font-semibold text-zinc-800 dark:text-zinc-200">
+                Leave a comment
+              </label>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                If you recorded a voice message above, you can simply write a brief title here!
+              </p>
+            </div>
             <textarea
               name="additional_comments"
               required
               rows={4}
-              minLength={20}
+              minLength={voiceBlob ? 1 : 20}
               disabled={loading || success}
-              placeholder="Spill it all out..."
+              placeholder="Spill it all out... (or just write a brief title if you left a voice comment!)"
               className="w-full px-5 py-4 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y transition-all disabled:opacity-50"
             />
           </div>
-
-          <VoiceRecorder onAudioReady={setVoiceBlob} />
           
           {error && (
             <p className="text-red-500 text-sm font-medium bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-200 dark:border-red-900/30">

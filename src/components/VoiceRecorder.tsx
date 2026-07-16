@@ -60,15 +60,31 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
 
   return (
     <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Voice Comment (Optional)</label>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+            Speak Your Mind <Mic className="w-4 h-4 text-blue-500" />
+          </label>
+          <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap">
+            Highly Recommended
+          </span>
+        </div>
         {isRecording && (
-          <span className="flex items-center text-xs font-medium text-red-500 animate-pulse">
-            <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+          <span className="flex items-center text-xs font-medium text-red-500">
+            <div className="flex items-center justify-center gap-0.5 mr-2 h-3">
+              <span className="w-1 h-3 bg-red-500 rounded-full animate-[bounce_1s_infinite_0ms]"></span>
+              <span className="w-1 h-2 bg-red-500 rounded-full animate-[bounce_1s_infinite_200ms]"></span>
+              <span className="w-1 h-4 bg-red-500 rounded-full animate-[bounce_1s_infinite_400ms]"></span>
+              <span className="w-1 h-2 bg-red-500 rounded-full animate-[bounce_1s_infinite_200ms]"></span>
+            </div>
             Recording...
           </span>
         )}
       </div>
+      
+      <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4 max-w-lg">
+        We love hearing the raw emotion in your voice. Take a moment to record your thoughts—it makes the experience much more immersive!
+      </p>
       
       {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
       
@@ -87,12 +103,13 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
               <button
                 type="button"
                 onClick={startRecording}
-                className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors shrink-0"
+                className="group flex items-center gap-2 bg-blue-600 text-white dark:bg-blue-600 px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 shrink-0 relative overflow-hidden"
               >
-                <Mic className="w-4 h-4" /> Record Voice
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                <Mic className="w-5 h-5" /> 
+                <span className="font-semibold">Record Voice</span>
               </button>
             )}
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 min-w-[120px]">Speak your mind directly.</p>
           </>
         ) : (
           <div className="flex flex-wrap items-center gap-3 w-full max-w-full overflow-hidden">
