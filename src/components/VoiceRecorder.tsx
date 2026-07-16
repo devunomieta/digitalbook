@@ -16,8 +16,25 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
 
   const startRecording = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Microphone API not available. On iOS/mobile, this requires an HTTPS connection.')
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mediaRecorder = new MediaRecorder(stream)
+      
+      // Determine best mimeType for cross-browser support (iOS Safari vs Chrome)
+      let options = undefined
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options = { mimeType: 'audio/webm' }
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' }
+        } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+          options = { mimeType: 'audio/aac' }
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, options)
       mediaRecorderRef.current = mediaRecorder
       audioChunksRef.current = []
 
@@ -28,7 +45,9 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
       }
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        // use the recorder's actual mimeType to avoid corrupting Safari's mp4 chunks
+        const actualMimeType = mediaRecorder.mimeType || 'audio/mp4'
+        const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType })
         const url = URL.createObjectURL(audioBlob)
         setAudioUrl(url)
         onAudioReady(audioBlob)
@@ -40,9 +59,14 @@ export default function VoiceRecorder({ onAudioReady }: VoiceRecorderProps) {
       mediaRecorder.start()
       setIsRecording(true)
       setError('')
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error accessing microphone:', err)
-      setError('Microphone access denied or unavailable.')
+      const errorMsg = err.message || 'Unknown error'
+      if (errorMsg.includes('HTTPS')) {
+        setError('Microphone access requires a secure HTTPS connection on this device.')
+      } else {
+        setError(`Microphone access denied or unavailable (${errorMsg}).`)
+      }
     }
   }
 
