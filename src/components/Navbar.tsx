@@ -9,7 +9,7 @@ export default async function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2 text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
@@ -42,6 +42,10 @@ export default async function Navbar() {
 async function ContinueReadingLink({ userId }: { userId: string }) {
   const supabase = await createClient()
   let latestChapter = 0
+  let currentChapter = 0
+
+  const { data: userResponse } = await supabase.auth.getUser()
+  const userMetadata = userResponse?.user?.user_metadata
 
   const { data: history } = await supabase
     .from('reading_history')
@@ -52,6 +56,9 @@ async function ContinueReadingLink({ userId }: { userId: string }) {
   if (history) {
     latestChapter = history.latest_chapter_unlocked
   }
+  
+  currentChapter = userMetadata?.current_chapter ?? latestChapter
+  const cappedChapter = Math.min(currentChapter, 10)
 
   const chapterPaths: Record<number, string> = {
     0: 'prelude',
@@ -67,11 +74,12 @@ async function ContinueReadingLink({ userId }: { userId: string }) {
     10: 'chapter-10',
   }
 
-  const linkHref = `/read/${chapterPaths[latestChapter] || 'prelude'}`
+  const linkHref = `/read/${chapterPaths[cappedChapter] || 'prelude'}`
 
   return (
-    <Link href={linkHref} className="hidden sm:block text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-      Continue Reading
+    <Link href={linkHref} className="text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline flex items-center">
+      <span className="sm:hidden">Continue</span>
+      <span className="hidden sm:inline">Continue Reading</span>
     </Link>
   )
 }

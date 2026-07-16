@@ -28,17 +28,16 @@ function timeAgo(dateParam: string | Date | null | undefined): string {
   const date = typeof dateParam === 'string' ? new Date(dateParam) : dateParam
   const now = new Date()
   const seconds = Math.round((now.getTime() - date.getTime()) / 1000)
-  const minutes = Math.round(seconds / 60)
-  const hours = Math.round(minutes / 60)
-  const days = Math.round(hours / 24)
 
-  if (seconds < 60) return 'Just now'
-  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
-  if (days === 1) return 'Yesterday'
-  if (days < 30) return `${days} day${days > 1 ? 's' : ''} ago`
-  
-  return date.toLocaleDateString()
+  if (seconds < 300) return 'ACTIVE'
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 
 export default async function ViewUsersPage() {
@@ -106,7 +105,8 @@ export default async function ViewUsersPage() {
       email: u.email || 'No email',
       createdAt: u.created_at,
       latestChapter: history?.latest_chapter_unlocked ?? 0,
-      lastReadAt: history?.last_read_at || null
+      currentChapter: u.user_metadata?.current_chapter ?? history?.latest_chapter_unlocked ?? 0,
+      lastReadAt: u.user_metadata?.last_read_at || history?.updated_at || null
     }
   })
 
@@ -164,7 +164,7 @@ export default async function ViewUsersPage() {
                       </td>
                       <td className="p-4">
                         <div className="text-sm text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800/80 inline-flex items-center px-3 py-1 rounded-full font-medium truncate max-w-[250px] md:max-w-[400px]">
-                          {chapterTitles[u.latestChapter] || `Chapter ${u.latestChapter}`}
+                          {u.currentChapter > 10 ? 'Completed' : (chapterTitles[u.currentChapter] || `Chapter ${u.currentChapter}`)}
                         </div>
                       </td>
                       <td className="p-4 pr-6 text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">

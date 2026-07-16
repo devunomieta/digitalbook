@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 export async function deleteComments(commentIds: number[]) {
@@ -16,8 +16,10 @@ export async function deleteComments(commentIds: number[]) {
     return { error: 'Not authenticated' }
   }
 
+  const adminClient = await createAdminClient()
+
   // First, fetch the comments to check if there are voice URLs to delete
-  const { data: comments, error: fetchError } = await supabase
+  const { data: comments, error: fetchError } = await adminClient
     .from('comments')
     .select('voice_url')
     .in('id', commentIds)
@@ -47,7 +49,7 @@ export async function deleteComments(commentIds: number[]) {
     }
 
     if (filesToDelete.length > 0) {
-      const { error: storageError } = await supabase.storage
+      const { error: storageError } = await adminClient.storage
         .from('voice_comments')
         .remove(filesToDelete)
         
@@ -59,7 +61,7 @@ export async function deleteComments(commentIds: number[]) {
   }
 
   // Delete from database
-  const { error: deleteError } = await supabase
+  const { error: deleteError } = await adminClient
     .from('comments')
     .delete()
     .in('id', commentIds)

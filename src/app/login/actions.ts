@@ -10,7 +10,7 @@ export async function login(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
@@ -19,8 +19,36 @@ export async function login(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(error.message || 'Could not authenticate user')}`)
   }
 
+  // Find their latest unlocked chapter
+  let latestChapter = 0
+  if (data?.user) {
+    const { data: history } = await supabase
+      .from('reading_history')
+      .select('latest_chapter_unlocked')
+      .eq('user_id', data.user.id)
+      .single()
+    if (history) {
+      latestChapter = history.latest_chapter_unlocked
+    }
+  }
+
+  const chapterPaths: Record<number, string> = {
+    0: 'prelude',
+    1: 'chapter-1',
+    2: 'chapter-2',
+    3: 'chapter-3',
+    4: 'chapter-4',
+    5: 'chapter-5',
+    6: 'chapter-6',
+    7: 'chapter-7',
+    8: 'chapter-8',
+    9: 'chapter-9',
+    10: 'chapter-10',
+  }
+
   revalidatePath('/', 'layout')
-  redirect('/read/prelude')
+  const redirectPath = `/read/${chapterPaths[latestChapter] || 'prelude'}`
+  redirect(redirectPath)
 }
 
 export async function signup(formData: FormData) {

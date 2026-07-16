@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 
 export async function submitComment(formData: FormData) {
   const supabase = await createClient()
@@ -61,7 +61,7 @@ export async function submitComment(formData: FormData) {
 
   // Update reading_history to unlock the next chapter
   // 0 = prelude, 1 = chapter 1, etc.
-  const nextChapter = chapterId + 1
+  const nextChapter = Math.min(chapterId + 1, 10)
 
   const { data: history } = await supabase
     .from('reading_history')
@@ -79,4 +79,63 @@ export async function submitComment(formData: FormData) {
   revalidatePath('/read', 'layout')
   
   return { success: true }
+}
+
+export async function recordLastSeen(pathname?: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return
+
+  const adminClient = await createAdminClient()
+  
+  // Track last seen in reading_history
+  // Note: the last_read_at column doesn't exist in the reading_history table, 
+  // so we will store it in user_metadata instead to avoid schema changes.
+
+  // Track current_chapter in user_metadata if pathname is provided
+  if (pathname) {
+    const chapterPaths: Record<string, number> = {
+      'prelude': 0,
+      'chapter-1': 1,
+      'chapter-2': 2,
+      'chapter-3': 3,
+      'chapter-4': 4,
+      'chapter-5': 5,
+      'chapter-6': 6,
+      'chapter-7': 7,
+      'chapter-8': 8,
+      'chapter-9': 9,
+      'chapter-10': 10,
+    }
+    
+    const segment = pathname.split('/').pop() || ''
+    const chapterId = chapterPaths[segment]
+    
+    if (chapterId !== undefined) {
+      await adminClient.auth.admin.updateUserById(user.id, {
+        user_metadata: { 
+          ...user.user_metadata, 
+          current_chapter: chapterId,
+          last_read_at: new Date().toISOString()
+        }
+      })
+    } else {
+      // Still update last_read_at even if chapter is not recognized
+      await adminClient.auth.admin.updateUserById(user.id, {
+        user_metadata: { 
+          ...user.user_metadata, 
+          last_read_at: new Date().toISOString()
+        }
+      })
+    }
+  } else {
+    // If no pathname provided, just update last_read_at
+    await adminClient.auth.admin.updateUserById(user.id, {
+      user_metadata: { 
+        ...user.user_metadata, 
+        last_read_at: new Date().toISOString()
+      }
+    })
+  }
 }
